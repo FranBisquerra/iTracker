@@ -27,9 +27,9 @@ class Ticket(models.Model):
 	priority 	= models.ForeignKey(Priority, on_delete=models.CASCADE)
 	creator 	= models.ForeignKey(User, on_delete=models.CASCADE)
 	categories 	= models.ManyToManyField(Category, related_name='ticket_categories')
-	users 		= models.ManyToManyField(User,  related_name='ticket_users')
+	user 		= models.ForeignKey(User, related_name='ticket_user', on_delete=models.CASCADE, default=0)
 
 class Comment(models.Model):
-	ticket 	= models.ForeignKey(Ticket, on_delete=models.CASCADE)
+	ticket 		= models.ForeignKey(Ticket, on_delete=models.CASCADE)
 	user 		= models.ForeignKey(User, on_delete=models.CASCADE)
 	description = models.TextField()

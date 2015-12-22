@@ -5,22 +5,22 @@
 
 {% block content %}
 
-<div class="row">
+<div style="padding-top: 100px" class="row">
 
 	<div class="well col-sm-8 col-sm-offset-2">
 		<div class="row">
 			<div class="col-sm-8 col-sm-offset-2">
-				<img src="">
+				<img class="img-responsive" src="{% static 'images/iTracker_logo.png' %}">
 			</div>
 		</div>
-		<div class="row">
+		<div class="row row-top-buffer">
 			<div class="col-sm-8 text-center col-sm-offset-2">
 
 				<form method="post" action=""> {% csrf_token %}
 
 				    {% bootstrap_form LoginForm%}
 
-				    <input class="btn btn-primary" type="submit" value="Entrar"/>
+				    <input class="btn btn-primary btn-lg" type="submit" value="Entrar"/>
 				</form>
 
 			</div>

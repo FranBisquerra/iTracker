@@ -3,6 +3,33 @@
 
 {% block content %}
 
-<h1>Welcome home <big>{{user}}</big></h1>
+{% for issue in issues %}
+
+<div class="row">
+	<div class="col-sm-4">
+		<div class="well">
+			<ul class="list-unstyled">
+				<li>
+					<label class="label label-default label-lg">{{issue.name}}</label>		
+				</li>
+				<li>
+					<label>Creador:</label>
+					{{issue.creator}}
+				</li>
+				<li>
+					<label>Asignado a:</label>
+					{{issue.ticket_users}}
+				</li>
+				<li>
+					<p>{{issue.description}}</p>
+				</li>
+			</ul>
+			
+		</div>
+	</div>
+</div>
+
+{% endfor %}
+
 
 {% endblock%}

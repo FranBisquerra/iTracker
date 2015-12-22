@@ -1,0 +1,36 @@
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery=1 %}
+
+{# Display django.contrib.messages as Bootstrap alerts #}
+{% bootstrap_messages %}
+
+{% include "i_tracker/head-css.html" %}
+<!DOCTYPE html>
+
+<html lang="es">
+    <head>
+        <meta charset="utf-8">
+        <title>iTracker</title>
+        <meta name="description" content="">
+        <meta name="author" content="Francesc Bisquerra">
+        {% block extra_head %}{% endblock %}
+    </head>
+
+    <body>
+        <div class="container">
+        
+            {% include "i_tracker/menu.html" %}
+
+            {% block content %}{% endblock %}
+
+            {% include "i_tracker/footer.html" %}
+
+        </div> <!-- container -->
+
+
+    </body>
+</html>

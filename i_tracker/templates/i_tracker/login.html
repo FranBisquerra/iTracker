@@ -1,0 +1,32 @@
+{% extends "i_tracker/base.html" %}
+{% load bootstrap3 %}
+{% load staticfiles %}
+
+
+{% block content %}
+
+<div class="row">
+
+	<div class="well col-sm-8 col-sm-offset-2">
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2">
+				<img src="">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-8 text-center col-sm-offset-2">
+
+				<form method="post" action=""> {% csrf_token %}
+
+				    {% bootstrap_form LoginForm%}
+
+				    <input class="btn btn-primary" type="submit" value="Entrar"/>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+</div>
+
+{% endblock %}

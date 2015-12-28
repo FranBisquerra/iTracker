@@ -1,0 +1,25 @@
+{% extends "i_tracker/base.html" %}
+{% load bootstrap3 %}
+
+{% load staticfiles %}
+
+{% block extrahead %}
+  {{ form.media }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row row-top-buffer">
+	<div class="col-sm-8 text-center col-sm-offset-2">
+
+		<form method="post" action=""> {% csrf_token %}
+
+		    {% bootstrap_form TicketForm%}
+
+		    <input class="btn btn-primary pull-right" type="submit" value="Guardar"/>
+		</form>
+
+	</div>
+</div>
+
+{% endblock %}

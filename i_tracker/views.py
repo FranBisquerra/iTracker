@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm
+from .forms import LoginForm, TicketForm
 from django.shortcuts import redirect
 from i_tracker.models import *
 
@@ -62,3 +62,15 @@ def home_table(request):
 		"session": request.session,
 	}
 	return render(request, "i_tracker/home_table.html", context)
+
+# NEW ISSUE
+def new_issue(request):
+	ticket_form = TicketForm()
+
+
+	context = {
+
+		"TicketForm": ticket_form,
+		"session": request.session,
+	}
+	return render(request, "i_tracker/new_issue.html", context)

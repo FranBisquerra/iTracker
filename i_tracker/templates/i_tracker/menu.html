@@ -31,6 +31,12 @@
               &nbsp; Vista de tabla
           </a>
         </li>
+        <li class="{% if request.resolver_match.url_name == 'new_issue' %}active{% endif %}">
+          <a href="{% url 'new_issue' %}">
+            <i class="fa fa-plus fa-lg"></i>
+              &nbsp; Nueva incidencia
+          </a>
+        </li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">

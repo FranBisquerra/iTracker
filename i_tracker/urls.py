@@ -7,4 +7,5 @@ urlpatterns = [
 	url(r'^logout/$', views.logout, name='logout'),
 	url(r'^home/$', views.home, name='home'),
 	url(r'^home/table/$', views.home_table, name='home_table'),
+	url(r'^home/new_issue/$', views.new_issue, name='new_issue'),
 ]

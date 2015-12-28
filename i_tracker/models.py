@@ -6,18 +6,34 @@ from django.contrib.auth.models import User
 class Permission(models.Model):
 	name 		= models.CharField(max_length=30)
 
+	def __str__(self):              # __unicode__ on Python 2
+		return self.name
+
+
 class Profile(models.Model):
 	name 		= models.CharField(max_length=100)
 	description = models.TextField()
 	idpermision = models.ForeignKey(Permission, on_delete=models.CASCADE)
 	users 		= models.ManyToManyField(User)
 
+	def __str__(self):              # __unicode__ on Python 2
+		return self.name
+
+
 class Priority(models.Model):
 	name 		= models.CharField(max_length=30)
+
+	def __str__(self):              # __unicode__ on Python 2
+		return self.name
+
 
 class Category(models.Model):
 	name 		= models.CharField(max_length=30)	
 	description = models.TextField()
+
+	def __str__(self):              # __unicode__ on Python 2
+		return self.name
+
 		
 class Ticket(models.Model):
 	name 		= models.CharField(max_length=100)
@@ -28,6 +44,9 @@ class Ticket(models.Model):
 	creator 	= models.ForeignKey(User, on_delete=models.CASCADE)
 	categories 	= models.ManyToManyField(Category, related_name='ticket_categories')
 	user 		= models.ForeignKey(User, related_name='ticket_user', on_delete=models.CASCADE, default=0)
+
+	def __str__(self):              # __unicode__ on Python 2
+		return self.name
 
 class Comment(models.Model):
 	ticket 		= models.ForeignKey(Ticket, on_delete=models.CASCADE)

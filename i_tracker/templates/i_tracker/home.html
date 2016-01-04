@@ -3,9 +3,10 @@
 
 {% block content %}
 
-{% for issue in issues %}
-
 <div class="row">
+
+	{% for issue in issues %}
+
 	<div class="col-sm-4">
 		<div class="well">
 			<div class="row">
@@ -35,9 +36,9 @@
 			</div>
 		</div>
 	</div>
+
+	{% endfor %}
+
 </div>
-
-{% endfor %}
-
 
 {% endblock%}

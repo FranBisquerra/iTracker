@@ -9,6 +9,8 @@ class LoginForm(forms.Form):
 
 class TicketForm(forms.ModelForm):
 
+	datesolved = forms.DateField(widget=DateTimePicker(), required=False)
+	
 	class Meta:
 		model = Ticket
 		fields = '__all__'

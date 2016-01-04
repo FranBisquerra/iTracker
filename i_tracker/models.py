@@ -38,8 +38,8 @@ class Category(models.Model):
 class Ticket(models.Model):
 	name 		= models.CharField(max_length=100)
 	description = models.TextField()
-	dateraised 	= models.DateTimeField(default=timezone.now)
-	datesolved 	= models.DateTimeField(blank=True, null=True)
+	dateraised 	= models.DateField(default=timezone.now)
+	datesolved 	= models.DateField(blank=True, null=True)
 	priority 	= models.ForeignKey(Priority, on_delete=models.CASCADE)
 	creator 	= models.ForeignKey(User, on_delete=models.CASCADE)
 	categories 	= models.ManyToManyField(Category, related_name='ticket_categories')

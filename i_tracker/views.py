@@ -65,28 +65,51 @@ def home_table(request):
 # ISSUE
 def issue(request, issue_pk = None):
 
+	context = {}
+
 	session = request.session
 
 	uid = session.get('_auth_user_id')
 
+	# Check if POST or GET
+	if request.method == 'POST':
 
-	if issue_pk is not None:
-		# get the info.
-		issue = Ticket.objects.get(pk=issue_pk)
-		ticket_form = TicketForm( initial={ 'name': issue.name,
-											'description': issue.description,
-											'dateraised': issue.dateraised,
-											'datesolved': issue.datesolved,
-											'priority': issue.priority,
-											'creator': issue.creator,
-											'categories': issue.categories.all(),
-											'user': issue.user,
-											})
+		# Save
+		if issue_pk is None:
+			form = TicketForm(request.POST)
+			
+		# Update
+		else:
+			instance = Ticket.objects.get(pk=issue_pk)
+			form = TicketForm(request.POST, instance=instance)
+
+
+		# validate form
+		if form.is_valid():
+			# save data
+			form.save()
+
+		# return to the home page with message
+		return redirect('home')
+
 	else:
-		# set the default info.
-		ticket_form = TicketForm( initial={ 'creator': uid,
-											})
-		issue = None
+
+		if issue_pk is not None:
+			# get the info.
+			issue = Ticket.objects.get(pk=issue_pk)
+			ticket_form = TicketForm( initial={ 'name': issue.name,
+												'description': issue.description,
+												'dateraised': issue.dateraised,
+												'datesolved': issue.datesolved,
+												'priority': issue.priority,
+												'creator': issue.creator,
+												'categories': issue.categories.all(),
+												'user': issue.user,
+												})
+		else:
+			# set the default info.
+			ticket_form = TicketForm( initial={ 'creator': uid })
+			issue = None
 
 	context = {
 
@@ -94,4 +117,5 @@ def issue(request, issue_pk = None):
 		"issue": issue,
 		"session": request.session,
 	}
+
 	return render(request, "i_tracker/issue.html", context)

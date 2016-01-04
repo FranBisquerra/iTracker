@@ -8,23 +8,31 @@
 <div class="row">
 	<div class="col-sm-4">
 		<div class="well">
-			<ul class="list-unstyled">
-				<li>
-					<label class="label label-default label-lg">{{issue.name}}</label>		
-				</li>
-				<li>
-					<label>Creador:</label>
-					{{issue.creator}}
-				</li>
-				<li>
-					<label>Asignado a:</label>
-					{{issue.ticket_users}}
-				</li>
-				<li>
-					<p>{{issue.description}}</p>
-				</li>
-			</ul>
-			
+			<div class="row">
+				<div class="col-md-12">
+					<ul class="list-unstyled">
+						<li>
+							<label class="label label-default label-lg">{{issue.name}}</label>		
+						</li>
+						<li>
+							<label>Creador:</label>
+							{{issue.creator}}
+						</li>
+						<li>
+							<label>Asignado a:</label>
+							{{issue.ticket_users}}
+						</li>
+						<li>
+							<p>{{issue.description}}</p>
+						</li>
+					</ul>
+				</div>	
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<a class="btn btn-primary pull-right" href="{% url 'issue' issue.id %}">Ver</a>			
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

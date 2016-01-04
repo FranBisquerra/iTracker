@@ -9,7 +9,6 @@ from i_tracker.models import *
 # LOGIN VIEW
 def login(request):
 
-	print('here')
 	login_form = LoginForm(request.POST or None)
 
 	if login_form.is_valid():
@@ -63,14 +62,36 @@ def home_table(request):
 	}
 	return render(request, "i_tracker/home_table.html", context)
 
-# NEW ISSUE
-def new_issue(request):
-	ticket_form = TicketForm()
+# ISSUE
+def issue(request, issue_pk = None):
 
+	session = request.session
+
+	uid = session.get('_auth_user_id')
+
+
+	if issue_pk is not None:
+		# get the info.
+		issue = Ticket.objects.get(pk=issue_pk)
+		ticket_form = TicketForm( initial={ 'name': issue.name,
+											'description': issue.description,
+											'dateraised': issue.dateraised,
+											'datesolved': issue.datesolved,
+											'priority': issue.priority,
+											'creator': issue.creator,
+											'categories': issue.categories.all(),
+											'user': issue.user,
+											})
+	else:
+		# set the default info.
+		ticket_form = TicketForm( initial={ 'creator': uid,
+											})
+		issue = None
 
 	context = {
 
 		"TicketForm": ticket_form,
+		"issue": issue,
 		"session": request.session,
 	}
-	return render(request, "i_tracker/new_issue.html", context)
+	return render(request, "i_tracker/issue.html", context)

@@ -3,10 +3,6 @@
 
 {% load staticfiles %}
 
-{% block extrahead %}
-  {{ form.media }}
-{% endblock %}
-
 {% block content %}
 
 <div class="row row-top-buffer">
@@ -14,7 +10,7 @@
 
 		<form method="post" action=""> {% csrf_token %}
 
-		    {% bootstrap_form TicketForm%}
+		    {% bootstrap_form TicketForm %}
 
 		    <input class="btn btn-primary pull-right" type="submit" value="Guardar"/>
 		</form>

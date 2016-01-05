@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django.utils.datastructures import MultiValueDict, MergeDict
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
@@ -9,7 +10,7 @@ class LoginForm(forms.Form):
 
 class TicketForm(forms.ModelForm):
 
-	datesolved = forms.DateField(widget=DateTimePicker(), required=False)
+	datesolved = forms.DateField(widget=DateTimePicker(options={"format": "DD/MM/YYYY"}), required=False)
 	
 	class Meta:
 		model = Ticket

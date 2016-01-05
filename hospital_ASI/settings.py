@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'crispy_forms',
     'bootstrap3_datetime',
+    'table',
     )
 
 MIDDLEWARE_CLASSES = (

@@ -1,3 +1,7 @@
 Django==1.8
+argparse==1.2.1
 django-bootstrap3==6.2.2
+django-bootstrap3-datetimepicker==2.2.3
 django-crispy-forms==1.5.2
+django-datatable==0.1.5
+wsgiref==0.1.2

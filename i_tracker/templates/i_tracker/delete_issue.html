@@ -1,0 +1,27 @@
+
+{% extends "i_tracker/base.html" %}
+{% load bootstrap3 %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="row row-top-buffer">
+	<div class="row-top-buffer col-sm-4 text-center col-sm-offset-4">
+
+		<div class="page-header">
+			<h4>¿ Seguro que desea eliminar la incidencia {{ issue_pk }} ?</h4>
+			<h6>esta accion no es reversible</h6>
+		</div>
+		<form method="post">
+		  	{% csrf_token %}
+			<div class="btn-group">
+				<a class="btn btn-default" href="{{ request.META.HTTP_REFERER }}">Volver</a>
+				<input class="btn btn-danger" type="submit" value="Eliminar"/>
+			</div>
+		</form>
+
+	</div>
+</div>
+
+{% endblock%}

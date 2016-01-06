@@ -3,6 +3,65 @@
 
 {% block content %}
 
+
+<div class="row row-top-buffer">
+	<div class="col-sm-12">
+		<div class="page-header pull-left clickable">
+			<h4> Incidencias creadas </h4>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+
+	{% for issue in created_issues %}
+
+	<div class="col-sm-4">
+		<div class="well">
+			<div class="row">
+				<div class="col-md-12">
+					<ul class="list-unstyled">
+						<li>
+							<label class="label label-default label-lg">{{issue.name}}</label>		
+						</li>
+						<li>
+							<label>Creador:</label>
+							{{issue.creator}}
+						</li>
+						<li>
+							<label>Asignado a:</label>
+							{{issue.user}}
+						</li>
+						<li>
+							<p>{{issue.description}}</p>
+						</li>
+					</ul>
+				</div>	
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="btn-group pull-right">
+						<a class="btn btn-danger" href="{% url 'delete_issue' issue.id %}">Eliminar</a>			
+						<a class="btn btn-primary" href="{% url 'issue' issue.id %}">Ver</a>				
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{% endfor %}
+
+</div>
+
+<div class="row row-top-buffer">
+	<div class="col-sm-12">
+		<div class="page-header pull-left clickable">
+			<h4> Incidencias asignadas </h4>
+		</div>
+	</div>
+</div>
+
 <div class="row">
 
 	{% for issue in issues %}
@@ -21,7 +80,7 @@
 						</li>
 						<li>
 							<label>Asignado a:</label>
-							{{issue.ticket_users}}
+							{{issue.user}}
 						</li>
 						<li>
 							<p>{{issue.description}}</p>
@@ -31,7 +90,11 @@
 			</div>
 			<div class="row">
 				<div class="col-md-12">
-					<a class="btn btn-primary pull-right" href="{% url 'issue' issue.id %}">Ver</a>			
+					<div class="btn-group pull-right">
+						<a class="btn btn-danger" href="{% url 'delete_issue' issue.id %}">Eliminar</a>			
+						<a class="btn btn-primary" href="{% url 'issue' issue.id %}">Ver</a>				
+					</div>
+					
 				</div>
 			</div>
 		</div>

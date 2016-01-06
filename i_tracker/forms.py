@@ -2,7 +2,7 @@
 from django.utils.datastructures import MultiValueDict, MergeDict
 from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
-from .models import Ticket
+from .models import Ticket, Comment
 
 class LoginForm(forms.Form):
     username = forms.CharField(label='Usuario')
@@ -14,4 +14,10 @@ class TicketForm(forms.ModelForm):
 	
 	class Meta:
 		model = Ticket
+		fields = '__all__'
+		
+class CommentForm(forms.ModelForm):
+	
+	class Meta:
+		model = Comment
 		fields = '__all__'

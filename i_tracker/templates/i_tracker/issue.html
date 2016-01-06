@@ -7,14 +7,85 @@
 
 <div class="row row-top-buffer">
 	<div class="col-sm-8 text-center col-sm-offset-2">
+		<div class="pull-left clickable">
+			<h4> Informacion </h4>
+		</div>
+	</div>
+</div>
+
+<div class="row row-top-buffer">
+	<div class="col-sm-8 text-center col-sm-offset-2">
 
 		<form method="post" action=""> {% csrf_token %}
 
 		    {% bootstrap_form TicketForm %}
 
-		    <input class="btn btn-primary pull-right" type="submit" value="Guardar"/>
+		    <div class="btn-group pull-right">
+		    	{% if issue.pk != None %}
+		    		<a class="btn btn-danger" href="{% url 'delete_issue' issue_pk=issue.pk %}">Eliminar</a>
+		    	{% endif %}
+		    	<input class="btn btn-primary" type="submit" value="Guardar"/>
+		    </div>	
 		</form>
 
 	</div>
 </div>
+
+<div class="row">
+	<div class="col-sm-8 text-center col-sm-offset-2 separator">
+	</div>
+</div>
+
+{% if issue.pk %}
+
+	<div class="row row-top-buffer">
+		<div class="col-sm-8 text-center col-sm-offset-2">
+			<div class="pull-left clickable">
+				<h4> Comentarios </h4>
+			</div>
+		</div>
+	</div>
+
+	<div class="row row-top-buffer">
+		<div class="col-sm-8 text-center col-sm-offset-2">
+			{% for comment in comments %}
+
+				<div class="row row-top-buffer row-bottom-buffer comment-bubble">
+					<div class="col-md-8">
+						<p class="pull-left"><label>{{ comment.user }}:</label> {{ comment.description }}</p>
+					</div>
+
+					{% if comment.user.pk|stringformat:"s" == uid %}
+					<div class="col-md-4">
+						<div class="btn-group pull-right">
+							<a class="btn btn-danger" href="{% url 'delete_comment' issue.pk comment.pk %}">
+								<i class="fa fa-minus"></i>
+							</a>
+							<a class="btn btn-primary" href="{% url 'comment' issue.pk comment.pk %}"><i class="fa fa-edit"></i></a>
+						</div>
+					</div>
+					{% endif %}
+				</div>
+			
+			{% empty %}
+
+				<div class="row-top-buffer row-bottom-buffer">
+					<div class="col-md-12">
+						<p>No hay commentarios para esta incidencia.</p>
+					</div>
+				</div>
+
+			{% endfor %}	
+
+			<div class="row-top-buffer row-bottom-buffer">
+				<div class="col-md-12">
+					<a class="btn btn-primary pull-right" href="{% url 'comment' issue.pk %}"> Comentar</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endif %}
+
+
 {% endblock %}

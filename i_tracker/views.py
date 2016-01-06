@@ -1,10 +1,13 @@
+from django.views.generic.edit import DeleteView # this is the generic view
+from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
-from .forms import LoginForm, TicketForm
+from .forms import LoginForm, TicketForm, CommentForm
 from django.shortcuts import redirect
-from i_tracker.models import *
+from i_tracker.models import * 
+from i_tracker.tables import TicketTable
 
 # LOGIN VIEW
 def login(request):
@@ -46,19 +49,31 @@ def home(request):
 
 	issues = list(Ticket.objects.filter(user=uid))
 
+	created_issues = list(Ticket.objects.filter(creator=uid))
+
 	context = {
 
 		"session": session,
 		"issues": issues,
+		"created_issues": created_issues,
 	}
 	return render(request, "i_tracker/home.html", context)
 
 # TABLE VIEW
 def home_table(request):
 
+	session = request.session
+
+	uid = session.get('_auth_user_id')
+
+	all_issues = list(Ticket.objects.filter(user=uid) | Ticket.objects.filter(creator=uid))
+
+	all_issues_table = TicketTable(all_issues)
+
 	context = {
 
 		"session": request.session,
+		"all_issues_table": all_issues_table,
 	}
 	return render(request, "i_tracker/home_table.html", context)
 
@@ -106,16 +121,111 @@ def issue(request, issue_pk = None):
 												'categories': issue.categories.all(),
 												'user': issue.user,
 												})
+			comments = list(Comment.objects.filter(ticket=issue_pk))
 		else:
 			# set the default info.
 			ticket_form = TicketForm( initial={ 'creator': uid })
 			issue = None
+			comments = None
+	
 
 	context = {
 
 		"TicketForm": ticket_form,
 		"issue": issue,
 		"session": request.session,
+		"comments": comments,
+		"uid": uid,
 	}
 
 	return render(request, "i_tracker/issue.html", context)
+
+# ISSUE DELETE
+def delete_issue(request, issue_pk):
+
+	if request.method == 'POST':
+
+		instance = Ticket.objects.get(pk=issue_pk).delete()
+		return redirect('home')
+	else:
+
+		context = {
+
+			'issue_pk': issue_pk,
+		}
+
+		return render(request, "i_tracker/delete_issue.html", context)
+
+# COMMENT
+def comment(request, issue_pk, comment_pk=None):
+
+	context = {}
+
+	session = request.session
+
+	uid = session.get('_auth_user_id')
+
+	# Check if POST or GET
+	if request.method == 'POST':
+
+		# Save
+		if comment_pk is None:
+			form = CommentForm(request.POST)
+			
+		# Update
+		else:
+			instance = Comment.objects.get(pk=comment_pk)
+			form = CommentForm(request.POST, instance=instance)
+
+
+		# validate form
+		if form.is_valid():
+			# save data
+			form.save()
+
+			comment_pk = None
+
+	if comment_pk is not None:
+
+		# get the info.
+		comment = Comment.objects.get(pk=comment_pk)
+		comment_form = CommentForm( initial={'ticket': issue_pk,
+											'user': uid,
+											'description': comment.description})
+
+	else:
+		# set the default info.
+		comment_form = CommentForm( initial={'ticket': issue_pk,
+											'user': uid })
+		comment = None	
+
+	older_comments = list(Comment.objects.filter(ticket=issue_pk))	
+
+	context = {
+
+		"CommentForm": comment_form,
+		"comment": comment,
+		"session": request.session,
+		"older_comments": older_comments,
+		"issue_pk": issue_pk,
+		"uid": uid,
+	}
+
+	return render(request, "i_tracker/comment.html", context)
+
+# COMMENT DELETE
+def delete_comment(request, comment_pk, issue_pk):
+
+	if request.method == 'POST':
+
+		instance = Comment.objects.get(pk=comment_pk).delete()
+
+		return redirect(request.META['HTTP_REFERER'])
+	else:
+
+		context = {
+
+			'comment_pk': comment_pk,
+		}
+
+		return render(request, "i_tracker/delete_comment.html", context)

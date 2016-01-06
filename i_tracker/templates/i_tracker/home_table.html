@@ -1,8 +1,17 @@
 {% extends "i_tracker/base.html" %}
 {% load bootstrap3 %}
+{% load table_tags %}
 
 {% block content %}
 
-<h1>Welcome to home_table <big>{{user}}</big></h1>
+<div class="">
+	<div class="col-sm-12">
+		<div class="pull-left clickable">
+			<h4> Todas las incidencias </h4>
+		</div>
+	</div>
+</div>
+
+{% render_table all_issues_table %}
 
 {% endblock%}

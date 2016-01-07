@@ -47,6 +47,9 @@
           <ul class="dropdown-menu">
             <li><a href="#"><i class="fa fa-gear fa-lg fa-spin"></i>&nbsp; Configuración</a></li>
             <li><a href="#"><i class="fa fa-language fa-lg"></i>&nbsp; Idioma</a></li>
+            {% if user.is_superuser %}
+              <li><a href="{% url 'admin:index' %}"><i class="fa fa-gears fa-lg"></i>&nbsp; Admin</a></li>
+            {% endif %}
             <li role="separator" class="divider"></li>
             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-lg"></i>&nbsp; Salir</a></li>
           </ul>

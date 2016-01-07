@@ -15,6 +15,13 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+from django.contrib import messages
+
+MESSAGE_TAGS = {
+            messages.SUCCESS: 'alert-success success',
+            messages.WARNING: 'alert-warning warning',
+            messages.ERROR: 'alert-danger error'
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
@@ -31,6 +38,13 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
+
+    #third party apps
+    'bootstrap3',
+    'crispy_forms',
+    'bootstrap3_datetime',
+    'table',
+    'django_admin_bootstrapped',
     
     # django apps
     'django.contrib.admin',
@@ -42,12 +56,6 @@ INSTALLED_APPS = (
     
     # my apps
     'i_tracker',
-
-    #third party apps
-    'bootstrap3',
-    'crispy_forms',
-    'bootstrap3_datetime',
-    'table',
     )
 
 MIDDLEWARE_CLASSES = (
@@ -117,3 +125,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # CRSIPY FORMS settings
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+# BOOTSTRAP 3 ADMIN LOOK AND FEEL
+DAB_FIELD_RENDERER = 'django_admin_bootstrapped.renderers.BootstrapFieldRenderer'

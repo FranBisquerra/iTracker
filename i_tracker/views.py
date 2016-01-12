@@ -11,6 +11,10 @@ from i_tracker.tables import TicketTable
 
 # LOGIN VIEW
 def login(request):
+	
+	#log out if user logged
+	if request.session:
+		auth_logout(request)
 
 	login_form = LoginForm(request.POST or None)
 
@@ -35,12 +39,14 @@ def login(request):
 	return render(request, "i_tracker/login.html", context)
 
 # LOGOUT VIEW
+@login_required(login_url='/login/')
 def logout(request):
 	auth_logout(request)
 	context = {}
 	return redirect('login')
 
 # HOME VIEW
+@login_required(login_url='/login/')
 def home(request):
 
 	session = request.session
@@ -60,6 +66,7 @@ def home(request):
 	return render(request, "i_tracker/home.html", context)
 
 # TABLE VIEW
+@login_required(login_url='/login/')
 def home_table(request):
 
 	session = request.session
@@ -78,6 +85,7 @@ def home_table(request):
 	return render(request, "i_tracker/home_table.html", context)
 
 # ISSUE
+@login_required(login_url='/login/')
 def issue(request, issue_pk = None):
 
 	context = {}
@@ -98,7 +106,6 @@ def issue(request, issue_pk = None):
 			instance = Ticket.objects.get(pk=issue_pk)
 			form = TicketForm(request.POST, instance=instance)
 
-
 		# validate form
 		if form.is_valid():
 			# save data
@@ -112,14 +119,14 @@ def issue(request, issue_pk = None):
 		if issue_pk is not None:
 			# get the info.
 			issue = Ticket.objects.get(pk=issue_pk)
-			ticket_form = TicketForm( initial={ 'name': issue.name,
-												'description': issue.description,
-												'dateraised': issue.dateraised,
-												'datesolved': issue.datesolved,
-												'priority': issue.priority,
-												'creator': issue.creator,
-												'categories': issue.categories.all(),
-												'user': issue.user,
+			ticket_form = TicketForm( initial={ 'name'		  : issue.name,
+												'description' : issue.description,
+												'dateraised'  : issue.dateraised,
+												'datesolved'  : issue.datesolved,
+												'priority'    : issue.priority,
+												'creator'     : issue.creator,
+												'categories'  : issue.categories.all(),
+												'user'        : issue.user,
 												})
 			comments = list(Comment.objects.filter(ticket=issue_pk))
 		else:
@@ -132,31 +139,23 @@ def issue(request, issue_pk = None):
 	context = {
 
 		"TicketForm": ticket_form,
-		"issue": issue,
-		"session": request.session,
-		"comments": comments,
-		"uid": uid,
+		"issue"		: issue,
+		"session"	: request.session,
+		"comments"	: comments,
+		"uid"		: uid,
 	}
 
 	return render(request, "i_tracker/issue.html", context)
 
 # ISSUE DELETE
+@login_required(login_url='/login/')
 def delete_issue(request, issue_pk):
 
-	if request.method == 'POST':
-
-		instance = Ticket.objects.get(pk=issue_pk).delete()
-		return redirect('home')
-	else:
-
-		context = {
-
-			'issue_pk': issue_pk,
-		}
-
-		return render(request, "i_tracker/delete_issue.html", context)
+	instance = Ticket.objects.get(pk=issue_pk).delete()
+	return redirect('home')
 
 # COMMENT
+@login_required(login_url='/login/')
 def comment(request, issue_pk, comment_pk=None):
 
 	context = {}
@@ -189,31 +188,32 @@ def comment(request, issue_pk, comment_pk=None):
 
 		# get the info.
 		comment = Comment.objects.get(pk=comment_pk)
-		comment_form = CommentForm( initial={'ticket': issue_pk,
-											'user': uid,
+		comment_form = CommentForm( initial={'ticket'    : issue_pk,
+											'user'       : uid,
 											'description': comment.description})
 
 	else:
 		# set the default info.
 		comment_form = CommentForm( initial={'ticket': issue_pk,
-											'user': uid })
+											'user'   : uid })
 		comment = None	
 
 	older_comments = list(Comment.objects.filter(ticket=issue_pk))	
 
 	context = {
 
-		"CommentForm": comment_form,
-		"comment": comment,
-		"session": request.session,
+		"CommentForm"   : comment_form,
+		"comment"       : comment,
+		"session"       : request.session,
 		"older_comments": older_comments,
-		"issue_pk": issue_pk,
-		"uid": uid,
+		"issue_pk"      : issue_pk,
+		"uid"           : uid,
 	}
 
 	return render(request, "i_tracker/comment.html", context)
 
 # COMMENT DELETE
+@login_required(login_url='/login/')
 def delete_comment(request, comment_pk, issue_pk):
 
 	if request.method == 'POST':

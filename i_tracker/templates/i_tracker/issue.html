@@ -22,7 +22,9 @@
 
 		    <div class="btn-group pull-right">
 		    	{% if issue.pk != None %}
-		    		<a class="btn btn-danger" href="{% url 'delete_issue' issue_pk=issue.pk %}">Eliminar</a>
+		    		<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteIssueModal">
+		    			Eliminar
+		    		</button>
 		    	{% endif %}
 		    	<input class="btn btn-primary" type="submit" value="Guardar"/>
 		    </div>	
@@ -84,6 +86,15 @@
 			</div>
 		</div>
 	</div>
+
+{% endif %}
+
+
+<!-- Delete issue modal -->
+
+{% if issue.pk != None %}
+
+	{% include "i_tracker/modal/delete_issue_modal.html" %}
 
 {% endif %}
 

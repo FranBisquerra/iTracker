@@ -1,14 +1,24 @@
 {% extends "i_tracker/base.html" %}
 {% load bootstrap3 %}
+{% load widget_tweaks %}
 
 {% load staticfiles %}
 
 {% block content %}
 
+{% if messages %}
+    {% for message in messages %}
+    <div class="fade in {% if message.tags %}{{ message.tags }}{% endif %}">
+      	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    	{{ message }}
+    </div>
+    {% endfor %}
+{% endif %}
+
 <div class="row row-top-buffer">
 	<div class="col-sm-8 text-center col-sm-offset-2">
-		<div class="pull-left clickable">
-			<h4> Informacion </h4>
+		<div class="page-header pull-left clickable">
+			<h4> Información </h4>
 		</div>
 	</div>
 </div>
@@ -16,18 +26,86 @@
 <div class="row row-top-buffer">
 	<div class="col-sm-8 text-center col-sm-offset-2">
 
-		<form method="post" action=""> {% csrf_token %}
+		<form method="post" action="" class=""> {% csrf_token %}
 
-		    {% bootstrap_form TicketForm %}
+			<div class="row text-left">
+				<div class="col-sm-3">
+					<label>Creador</label>
+					<input type="text" class="form-control" disabled 
+							value="{% if issue.creator != None%} {{issue.creator}} {% else %} {{user}} {% endif %}">
+				</div>
+				<div class="col-sm-6">
+					{% bootstrap_field TicketForm.name%}	
+				</div>
+				<div class="col-sm-3">
+					{% bootstrap_field TicketForm.priority%}
+				</div>
+			</div>
 
-		    <div class="btn-group pull-right">
-		    	{% if issue.pk != None %}
-		    		<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteIssueModal">
-		    			Eliminar
-		    		</button>
-		    	{% endif %}
-		    	<input class="btn btn-primary" type="submit" value="Guardar"/>
-		    </div>	
+			<div class="row text-left row-top-buffer">
+				<div class="col-sm-3">
+					<label for="selectProfile">Perfil</label>
+					  <select class="form-control" id="selectProfile">
+					  	<option value="0">todos</option>
+					 	{% for profile in profiles %}
+					    <option value="{{profile.pk}}">{{profile.name}}</option>
+					  	{% endfor %} 
+					  </select>
+				</div>
+				<div class="col-sm-3">
+					{% bootstrap_field TicketForm.user%}
+				</div>
+				<div class="col-sm-3">
+					<label>Emisión</label>
+					<input type="text" class="form-control" disabled value="{{issue.dateraised|date:'d/m/Y'}}">
+				</div>
+				<div class="col-sm-3">
+					{% bootstrap_field TicketForm.datesolved%}
+				</div>
+			</div>
+
+			<div class="row text-left row-top-buffer">
+				<div class="col-sm-4">
+					{% bootstrap_field TicketForm.categories%}
+					<div class="row">
+						<div class="col-sm-12">
+							<h6>* Para seleccionar más de un valor mantenga la tecla Ctrl presionada.</h6>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-8">
+					{% bootstrap_field TicketForm.description%}
+				</div>
+			</div>
+
+			<div class="row row-top-buffer">
+
+				<div class="col-sm-6">
+					<div class="row">
+						<div class="col-sm-4">
+							<div class="pull-left">
+								{% bootstrap_field TicketForm.escalated%}
+							</div>
+						</div>
+						<div class="col-sm-4">
+							<div class="pull-left">
+								{% bootstrap_field TicketForm.hidden%}
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-6">
+					<div class="btn-group pull-right">
+				    	{% if issue.pk != None %}
+				    		<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteIssueModal">
+				    			Eliminar
+				    		</button>
+				    	{% endif %}
+				    	<input class="btn btn-primary" type="submit" value="Guardar"/>
+				    </div>
+				</div>
+			</div>	
 		</form>
 
 	</div>
@@ -42,28 +120,34 @@
 
 	<div class="row row-top-buffer">
 		<div class="col-sm-8 text-center col-sm-offset-2">
-			<div class="pull-left clickable">
-				<h4> Comentarios </h4>
+			<div id="issueCommentsLabel" class="page-header pull-left clickable">
+				<h4> Comentarios <small>Plegar/desplegar</small></h4>
 			</div>
 		</div>
 	</div>
 
-	<div class="row row-top-buffer">
+	<div  class="row">
 		<div class="col-sm-8 text-center col-sm-offset-2">
 			{% for comment in comments %}
 
-				<div class="row row-top-buffer row-bottom-buffer comment-bubble">
-					<div class="col-md-8">
-						<p class="pull-left"><label>{{ comment.user }}:</label> {{ comment.description }}</p>
+				<div class="issue-comments row row-top-buffer row-bottom-buffer comment-bubble linear-transition">
+					<div class="col-md-10">
+						<label class="pull-left">{{ comment.user }}:</label>
+						<div class="row">
+							<div class="col-sm-12">
+								<p class="pull-left text-left">{{ comment.description }}</p>
+							</div>	
+						</div> 
 					</div>
 
 					{% if comment.user.pk|stringformat:"s" == uid %}
-					<div class="col-md-4">
+					<div class="col-md-2">
 						<div class="btn-group pull-right">
-							<a class="btn btn-danger" href="{% url 'delete_comment' issue.pk comment.pk %}">
-								<i class="fa fa-minus"></i>
-							</a>
-							<a class="btn btn-primary" href="{% url 'comment' issue.pk comment.pk %}"><i class="fa fa-edit"></i></a>
+							<button type="button" class="btn btn-danger" data-toggle="modal" 
+									data-target="#deleteCommentModal" data-comment="{{comment.pk}}" 
+									data-issue="{{issue.pk}}">
+			    				<i class="fa fa-minus"></i>
+			    			</button>
 						</div>
 					</div>
 					{% endif %}
@@ -81,7 +165,18 @@
 
 			<div class="row-top-buffer row-bottom-buffer">
 				<div class="col-md-12">
-					<a class="btn btn-primary pull-right" href="{% url 'comment' issue.pk %}"> Comentar</a>
+					<form method="post" action="{% url 'comment' issue_pk=issue.pk %}"> {% csrf_token %}
+
+						<div class="row text-left row-top-buffer">
+							<div class="col-sm-12">
+								{% bootstrap_form CommentForm%}
+							</div>
+						</div>
+
+					    <div class="btn-group pull-right">
+					    	<input class="btn btn-primary" type="submit" value="Comentar"/>
+					    </div>	
+					</form>
 				</div>
 			</div>
 		</div>
@@ -94,9 +189,122 @@
 
 {% if issue.pk != None %}
 
-	{% include "i_tracker/modal/delete_issue_modal.html" %}
+<div id="deleteIssueModal" class="modal fade" tabindex="-1" role="dialog" >
+  	<div class="modal-dialog modal-md">
+	    <div class="modal-content">
+	    	<div class="modal-header">
+			    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			    	<span aria-hidden="true">&times;</span>
+			    </button>
+			    <h4 class="modal-title" id="gridSystemModalLabel">
+			    	¿Esta seguro de que quiere eliminar la incidencia?
+			    </h4>
+	  		</div>
+	  		<div class="modal-body">
+	  			<div class="row">
+	  				<div class="col-sm-12">
+		  				<div class="btn-group pull-right">
+							<a class="btn btn-danger" href="{% url 'delete_issue' issue_pk=issue.pk %}">Eliminar</a>
+							<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteIssueModal">
+								Cancelar
+							</button>
+						</div>
+ 					</div>	
+	 			</div>
+			</div>
+    	</div>
+  	</div>
+</div>
 
 {% endif %}
 
+<!-- Delete comment modal -->
+
+{% if issue.pk != None %}
+
+	<div id="deleteCommentModal" class="modal fade" tabindex="-1" role="dialog" >
+	  	<div class="modal-dialog modal-md">
+		    <div class="modal-content">
+		    	<div class="modal-header">
+				    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				    	<span aria-hidden="true">&times;</span>
+				    </button>
+				    <h4 class="modal-title" id="gridSystemModalLabel">
+				    </h4>
+		  		</div>
+		  		<div class="modal-body">
+		  			<div class="row">
+		  				<div class="col-sm-12">
+			  				<div class="btn-group pull-right">
+								<a class="btn btn-danger">Eliminar</a>
+								<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#deleteCommentModal">
+									Cancelar
+								</button>
+							</div>
+	 					</div>	
+		 			</div>
+				</div>
+	    	</div>
+	  	</div>
+	</div>
+
+{% endif %}
+
+<script type="text/javascript">
+
+	$(document).ready (function(){
+
+		$('#deleteCommentModal').on('show.bs.modal', function (event) {
+
+		  var button = $(event.relatedTarget); // Button that triggered the modal
+		  var commentId = button.data('comment'); // Extract info from data-* attributes
+		  var issueId = button.data('issue'); // Extract info from data-* attributes
+
+		  var url = '/issue/' + issueId + '/comment/delete/' + commentId
+
+		  // Update the modal's content.
+		  var modal = $(this);
+		  modal.find('.modal-title').text('¿Esta seguro de que quiere eliminar el comentario?');
+		  modal.find('.modal-body a').attr("href", url);
+		});
+
+        $('#issueCommentsLabel').click(function(e) {
+
+	      $('.issue-comments').toggle("slow", function () {
+	        // animation complete
+	        $('html, body').animate({
+		        scrollTop: $(".issue-comments").offset().top
+		    }, 500);
+	      });
+	    }); 
+
+        $('select#selectProfile').change(function () {
+
+			var optionSelected = parseInt($(this).val());
+
+			$.ajax({
+			    url    : '/get/users/profile/',
+			    type   : 'GET',
+			    data   : ({'profile_pk' : optionSelected}),
+			    success: function(result) {
+
+			    	console.log(result)
+
+			        $("#id_user option").remove();
+
+			        $("#id_user").append('<option value>'+ '---------' + '</option>');
+					for (var i = result.length - 1; i >= 0; i--) {
+						$("#id_user").append('<option value="'+ result[i].pk +'">'+ result[i].fields.username +'</option>');
+					};
+			    },
+			    error: function(error) {
+			    	console.log(error)
+			    }
+			});
+		});
+
+	});
+
+</script>
 
 {% endblock %}

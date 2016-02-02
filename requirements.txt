@@ -1,7 +1,13 @@
 Django==1.8
-argparse==1.2.1
+django-admin-bootstrapped==2.5.7
 django-bootstrap3==6.2.2
 django-bootstrap3-datetimepicker==2.2.3
 django-crispy-forms==1.5.2
 django-datatable==0.1.5
-wsgiref==0.1.2
+django-widget-tweaks==1.4.1
+ecdsa==0.13
+fab==1.4.2
+Fabric==1.10.2
+paramiko==1.16.0
+pycrypto==2.6.1
+requests==2.9.1

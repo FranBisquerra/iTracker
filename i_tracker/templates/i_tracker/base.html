@@ -8,9 +8,6 @@
 {# Load static files #}
 {% load staticfiles %}
 
-{# Display django.contrib.messages as Bootstrap alerts #}
-{% bootstrap_messages %}
-
 <!DOCTYPE html>
 
 <html lang="es">
@@ -41,5 +38,6 @@
         </div> <!-- container -->
 
         <!-- scripts -->
+        {% include "i_tracker/body-js.html" %}
     </body>
 </html>

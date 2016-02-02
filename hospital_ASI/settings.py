@@ -18,9 +18,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 from django.contrib import messages
 
 MESSAGE_TAGS = {
-            messages.SUCCESS : 'alert-success success',
-            messages.WARNING : 'alert-warning warning',
-            messages.ERROR   : 'alert-danger error'
+            messages.SUCCESS : 'alert alert-success success',
+            messages.WARNING : 'alert alert-warning warning',
+            messages.ERROR   : 'alert alert-danger error', 
 }
 
 # Quick-start development settings - unsuitable for production
@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'bootstrap3_datetime',
     'table',
     'django_admin_bootstrapped',
+    'widget_tweaks',
     
     # django apps
     'django.contrib.admin',

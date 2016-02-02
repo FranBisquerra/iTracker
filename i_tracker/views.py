@@ -1,13 +1,16 @@
-from django.views.generic.edit import DeleteView # this is the generic view
-from django.core.urlresolvers import reverse_lazy
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
 from .forms import LoginForm, TicketForm, CommentForm
-from django.shortcuts import redirect
+from django.contrib import messages
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.messages import get_messages 
+from django.core import serializers 
+from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.views.generic.edit import DeleteView # this is the generic view
 from i_tracker.models import * 
 from i_tracker.tables import TicketTable
+import datetime
 
 # LOGIN VIEW
 def login(request):
@@ -94,22 +97,44 @@ def issue(request, issue_pk = None):
 
 	uid = session.get('_auth_user_id')
 
+	recived_msgs = get_messages(request)
+
 	# Check if POST or GET
 	if request.method == 'POST':
 
 		# Save
 		if issue_pk is None:
 			form = TicketForm(request.POST)
-			
+			print(request.POST)
+
+			if form.is_valid():
+				new_issue = form.save(commit=False)
+				new_issue.creator = User.objects.get(id=uid)
+				new_issue.dateraised = datetime.datetime.now()
+
+				# save data
+				form.save()
+				messages.success(request, "La incidencia se ha creado correctamente")
+			else:
+
+				messages.error(request, "Ha habido un error inesperado, Compruebe que el formulario es correcto.")
+				return redirect(request.META['HTTP_REFERER'])
+
 		# Update
 		else:
 			instance = Ticket.objects.get(pk=issue_pk)
 			form = TicketForm(request.POST, instance=instance)
+			
+			if form.is_valid():
+				updated_issue = form.save(commit=False)
+			
+				# save data
+				form.save()
+				messages.success(request, "La incidencia se ha actualizado correctamente")
+			else:
 
-		# validate form
-		if form.is_valid():
-			# save data
-			form.save()
+				messages.error(request, "Ha habido un error inesperado, Compruebe que el formulario es correcto.")
+				return redirect(request.META['HTTP_REFERER'])                             
 
 		# return to the home page with message
 		return redirect('home')
@@ -127,23 +152,34 @@ def issue(request, issue_pk = None):
 												'creator'     : issue.creator,
 												'categories'  : issue.categories.all(),
 												'user'        : issue.user,
+												'escalated'	  : issue.escalated,
+												'hidden'	  : issue.hidden,	
 												})
 			comments = list(Comment.objects.filter(ticket=issue_pk))
+
+			comment_form = CommentForm()
 		else:
 			# set the default info.
-			ticket_form = TicketForm( initial={ 'creator': uid })
+			ticket_form = TicketForm()
 			issue = None
 			comments = None
+			comment_form = None
+
+		profiles = Profile.objects.all()
 	
 
 	context = {
 
-		"TicketForm": ticket_form,
-		"issue"		: issue,
-		"session"	: request.session,
-		"comments"	: comments,
-		"uid"		: uid,
+		"TicketForm" : ticket_form,
+		"issue"		 : issue,
+		"session"	 : request.session,
+		"comments"	 : comments,
+		"uid"		 : uid,
+		"CommentForm": comment_form,
+		"messages"	 : recived_msgs,
+		"profiles"	 : profiles,
 	}
+
 
 	return render(request, "i_tracker/issue.html", context)
 
@@ -152,11 +188,12 @@ def issue(request, issue_pk = None):
 def delete_issue(request, issue_pk):
 
 	instance = Ticket.objects.get(pk=issue_pk).delete()
+	messages.success(request, 'La incidencia se ha eliminado correctamente.')
 	return redirect('home')
 
 # COMMENT
 @login_required(login_url='/login/')
-def comment(request, issue_pk, comment_pk=None):
+def comment(request, issue_pk):
 
 	context = {}
 
@@ -168,64 +205,51 @@ def comment(request, issue_pk, comment_pk=None):
 	if request.method == 'POST':
 
 		# Save
-		if comment_pk is None:
-			form = CommentForm(request.POST)
+		form = CommentForm(request.POST)
 			
-		# Update
-		else:
-			instance = Comment.objects.get(pk=comment_pk)
-			form = CommentForm(request.POST, instance=instance)
-
-
 		# validate form
 		if form.is_valid():
+			new_comment = form.save(commit=False)
+			new_comment.user = User.objects.get(id=uid)
+			new_comment.ticket = Ticket.objects.get(id=issue_pk)
 			# save data
 			form.save()
+			messages.success(request, 'El mensaje se ha guardado correctamente.')
+		else:
 
-			comment_pk = None
+			messages.error(request, 'Ha habido un error, intentelo de nuevo en unos minutos.')
+			return redirect(request.META['HTTP_REFERER'])
 
-	if comment_pk is not None:
-
-		# get the info.
-		comment = Comment.objects.get(pk=comment_pk)
-		comment_form = CommentForm( initial={'ticket'    : issue_pk,
-											'user'       : uid,
-											'description': comment.description})
-
-	else:
-		# set the default info.
-		comment_form = CommentForm( initial={'ticket': issue_pk,
-											'user'   : uid })
-		comment = None	
-
-	older_comments = list(Comment.objects.filter(ticket=issue_pk))	
-
-	context = {
-
-		"CommentForm"   : comment_form,
-		"comment"       : comment,
-		"session"       : request.session,
-		"older_comments": older_comments,
-		"issue_pk"      : issue_pk,
-		"uid"           : uid,
-	}
-
-	return render(request, "i_tracker/comment.html", context)
+	return redirect('issue', issue_pk=issue_pk)
 
 # COMMENT DELETE
 @login_required(login_url='/login/')
 def delete_comment(request, comment_pk, issue_pk):
 
-	if request.method == 'POST':
+	instance = Comment.objects.get(pk=comment_pk).delete()
+	messages.success(request, 'El mensaje se ha eliminado correctamente.')
+	return redirect(request.META['HTTP_REFERER'])
 
-		instance = Comment.objects.get(pk=comment_pk).delete()
 
-		return redirect(request.META['HTTP_REFERER'])
+# RETURN USERS BY PROFILE
+@login_required(login_url='/login/')
+def get_users_profile(request):
+
+	profile_pk = request.GET.get('profile_pk')
+
+	if  profile_pk == 0:
+
+		result_set = User.objects.all()
 	else:
 
-		context = {
+		results = list(UserProfile.objects.filter(profile=profile_pk))
 
-			'comment_pk': comment_pk,
-		}
+		result_set = []
 
-		return render(request, "i_tracker/delete_comment.html", context)
+		for result in results:
+
+			result_set.append(result.user)
+
+	json_response = serializers.serialize('json', result_set, fields=('username'))
+
+	return HttpResponse(json_response, content_type='application/json')

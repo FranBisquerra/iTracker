@@ -34,3 +34,22 @@
 	height: 1px;
 	background-color: darkgrey;
 }
+
+.page-header {
+	padding-bottom: 0px !important;
+}
+
+.linear-transition {
+
+	transition: visibility 0s, opacity 0.2s linear;
+}
+
+.background-red {
+
+	background-color: #FF8A8A !important;
+}
+
+.background-yellow {
+
+	background-color: #F2F4B3 !important;	
+}

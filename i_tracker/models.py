@@ -18,6 +18,12 @@ class Priority(models.Model):
 	def __str__(self):              # __unicode__ on Python 2
 		return self.name
 
+class State(models.Model):
+	name 		= models.CharField(max_length=30)
+
+	def __str__(self):              # __unicode__ on Python 2
+		return self.name
+
 
 class Category(models.Model):
 	name 		= models.CharField(max_length=30)	
@@ -36,6 +42,7 @@ class Ticket(models.Model):
 	creator 	= models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
 	categories 	= models.ManyToManyField(Category, related_name='ticket_categories', blank=False)
 	user 		= models.ForeignKey(User, related_name='ticket_user', on_delete=models.CASCADE, default=0, blank=False)
+	state	 	= models.ForeignKey(State, on_delete=models.CASCADE, blank=False)
 	escalated 	= models.BooleanField(default=False)
 	hidden		= models.BooleanField(default=False)
 

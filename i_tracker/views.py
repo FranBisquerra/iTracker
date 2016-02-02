@@ -60,11 +60,19 @@ def home(request):
 
 	created_issues = list(Ticket.objects.filter(creator=uid))
 
+	if request.user.is_superuser:
+
+		escalated_issues = Ticket.objects.filter(escalated=True)
+	else:
+
+		escalated_issues = []
+		
 	context = {
 
-		"session": session,
-		"issues": issues,
-		"created_issues": created_issues,
+		"session"          : session,
+		"issues"           : issues,
+		"created_issues"   : created_issues,
+		"escalated_issues" : escalated_issues, 
 	}
 	return render(request, "i_tracker/home.html", context)
 
@@ -153,7 +161,8 @@ def issue(request, issue_pk = None):
 												'categories'  : issue.categories.all(),
 												'user'        : issue.user,
 												'escalated'	  : issue.escalated,
-												'hidden'	  : issue.hidden,	
+												'hidden'	  : issue.hidden,
+												'state'		  : issue.state,		
 												})
 			comments = list(Comment.objects.filter(ticket=issue_pk))
 
@@ -166,18 +175,17 @@ def issue(request, issue_pk = None):
 			comment_form = None
 
 		profiles = Profile.objects.all()
-	
 
 	context = {
 
-		"TicketForm" : ticket_form,
-		"issue"		 : issue,
-		"session"	 : request.session,
-		"comments"	 : comments,
-		"uid"		 : uid,
-		"CommentForm": comment_form,
-		"messages"	 : recived_msgs,
-		"profiles"	 : profiles,
+		"TicketForm" 		 : ticket_form,
+		"issue"		 		 : issue,
+		"session"	 		 : request.session,
+		"comments"	 		 : comments,
+		"uid"		 		 : uid,
+		"CommentForm"		 : comment_form,
+		"messages"	 		 : recived_msgs,
+		"profiles"	 		 : profiles,
 	}
 
 

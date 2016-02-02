@@ -12,6 +12,7 @@ class TicketTable(Table):
     dateraised = Column(field='dateraised', header='Emisión')
     datesolved = Column(field='datesolved', header='Solucionado')
     priority   = Column(field='priority', header='Prioridad')
+    state      = Column(field='state', header='Estado') 
     escalated  = Column(field='escalated', header='Escalado')
     hidden     = Column(field='hidden', header='Archivada')
     class Meta:
